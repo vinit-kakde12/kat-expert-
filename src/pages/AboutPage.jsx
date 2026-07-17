@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import p6 from "@/assets/naman-agrawal.jpg";
 import {
   BookOpen,
   LineChart,
@@ -20,7 +21,9 @@ import {
   Send,
   Clock,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  Play,
+  Scale
 } from 'lucide-react';
 import { CONTACT_INFO, COURSES, FACULTY, TOPPERS, TESTIMONIALS } from "@/lib/site-data";
 import DossierDrawer from "@/components/site/DossierDrawer";
@@ -185,6 +188,67 @@ const NEWS_EVENTS = [
   }
 ];
 
+function AboutVideoCard({ video }) {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  return (
+    <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-md flex flex-col justify-between">
+      <div className="relative aspect-video bg-black overflow-hidden group">
+        {isPlaying ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1`}
+            title={video.title}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
+          />
+        ) : (
+          <button
+            onClick={() => setIsPlaying(true)}
+            className="absolute inset-0 w-full h-full cursor-pointer focus:outline-none"
+          >
+            <img
+              src={`https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`}
+              alt={video.title}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
+            <div className="absolute flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-brand-orange shadow-md transition-transform duration-300 group-hover:scale-110">
+              <Play className="ml-0.5 h-4 w-4 fill-current" />
+            </div>
+          </button>
+        )}
+      </div>
+      <div className="p-4 flex-1 flex flex-col justify-between text-left">
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center">
+            <span className="text-[9px] font-bold text-brand-orange uppercase bg-brand-orange/5 px-2 py-0.5 rounded-full">
+              {video.exam}
+            </span>
+            {video.score && (
+              <span className="text-[9px] font-bold text-brand-blue uppercase bg-brand-blue/5 px-2 py-0.5 rounded-full">
+                {video.score}
+              </span>
+            )}
+          </div>
+          <h3 className="font-display font-bold text-brand-blue text-xs leading-normal">
+            {video.title}
+          </h3>
+          <p className="text-[11px] text-gray-500 italic">
+            "{video.quote}"
+          </p>
+        </div>
+        <div className="mt-3 pt-2.5 border-t border-slate-50 flex items-center justify-between text-[10px] font-bold text-gray-400">
+          <span>{video.name}</span>
+          <span className="text-brand-blue">{video.college}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AboutPage() {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState('About');
@@ -221,12 +285,8 @@ export default function AboutPage() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const tab = params.get('tab');
-    if (tab && ['About', 'Faculty', 'Gallery', 'Reviews', 'Contact'].includes(tab)) {
+    if (tab && ['About', 'Faculty', 'Gallery', 'Contact'].includes(tab)) {
       setActiveTab(tab);
-    }
-    const subtab = params.get('subtab');
-    if (subtab && ['photos', 'videos', 'news'].includes(subtab)) {
-      setGallerySubTab(subtab);
     }
     const mentor = params.get('mentor');
     if (mentor) {
@@ -300,7 +360,6 @@ export default function AboutPage() {
     { id: 'About', label: 'About Us' },
     { id: 'Faculty', label: 'Elite Mentors' },
     { id: 'Gallery', label: 'Gallery' },
-    { id: 'Reviews', label: 'Reviews' },
     { id: 'Contact', label: 'Contact Us' }
   ];
 
@@ -387,168 +446,187 @@ export default function AboutPage() {
             transition={{ duration: 0.25 }}
             className="outline-none"
           >
-            
-            {/* ABOUT US TAB VIEW */}
+             {/* ABOUT US TAB VIEW */}
             {activeTab === 'About' && (
-              <div id="tab-pane-about-us">
+              <div id="tab-pane-about-us" className="max-w-5xl mx-auto px-4 sm:px-8 py-6 space-y-12">
                 {/* About Header Hero */}
-                <div className="text-center max-w-3xl mx-auto mb-16" id="about-hero">
-                  <span className="text-xs font-bold text-brand-orange uppercase tracking-widest bg-brand-orange/10 px-4 py-1.5 rounded-full inline-block mb-4">
+                <div className="text-center max-w-3xl mx-auto mb-8" id="about-hero">
+                  <span className="text-[11px] font-bold text-[#ea580c] uppercase tracking-widest bg-brand-orange/10 px-3.5 py-1.5 rounded-full inline-block mb-3">
                     Our Story & Philosophy
                   </span>
-                  <h1 className="text-4xl sm:text-5xl font-display font-bold text-brand-blue tracking-tight mb-6">
-                    About <span className="text-brand-orange">KATexpert</span>
+                  <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-brand-blue tracking-tight mb-3">
+                    About <span className="bg-gradient-to-r from-brand-orange to-[#f97316] bg-clip-text text-transparent">KATexpert</span>
                   </h1>
-                  <p className="text-lg sm:text-xl text-gray-600 font-medium italic">
+                  <p className="text-base sm:text-lg text-gray-600 font-medium italic">
                     "A Place to Learn, A Place to Grow"
                   </p>
-                  <div className="w-16 h-1.5 bg-brand-orange rounded-full mx-auto mt-6" />
+                  <div className="w-16 h-1 bg-[#ea580c] rounded-full mx-auto mt-4 shadow-sm" />
                 </div>
 
-                {/* Vision & Core Concept Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-20" id="about-philosophy-grid">
-                  <div className="space-y-6 text-left">
-                    <h2 className="text-2xl sm:text-3xl font-display font-bold text-brand-blue">
-                      Our Vision: Nurturing Careers through Excellence
-                    </h2>
-                    <p className="text-gray-600 leading-relaxed text-base">
-                      At <strong className="text-brand-blue">KATexpert</strong>, we operate strictly under
-                      the ethos of
-                      <strong className="text-brand-orange"> "A Place to Learn, A Place to Grow"</strong>.
-                      We are a leading test preparation institute based out of Dharampeth, Nagpur,
-                      specializing in guiding aspirants through highly competitive entrance examinations.
-                    </p>
-                    <p className="text-gray-600 leading-relaxed text-base">
-                      We focus on building rock-solid conceptual clarity before subjecting students to
-                      high-pressure timed simulators. By offering a hybrid mode of coaching, our students
-                      experience physical, face-to-face mentorship alongside online resources, combining
-                      stability with flexibility.
-                    </p>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                      <div className="flex items-center space-x-2.5">
-                        <CheckCircle2 className="w-5 h-5 text-brand-orange shrink-0" />
-                        <span className="text-sm font-bold text-brand-blue">Concept-First Teaching</span>
-                      </div>
-                      <div className="flex items-center space-x-2.5">
-                        <CheckCircle2 className="w-5 h-5 text-brand-orange shrink-0" />
-                        <span className="text-sm font-bold text-brand-blue">Hybrid Classroom Backup</span>
-                      </div>
-                      <div className="flex items-center space-x-2.5">
-                        <CheckCircle2 className="w-5 h-5 text-brand-orange shrink-0" />
-                        <span className="text-sm font-bold text-brand-blue">Weekly Sectional Drills</span>
-                      </div>
-                      <div className="flex items-center space-x-2.5">
-                        <CheckCircle2 className="w-5 h-5 text-brand-orange shrink-0" />
-                        <span className="text-sm font-bold text-brand-blue">One-on-One Mentorship</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-100 p-8 sm:p-10 rounded-2xl shadow-xl shadow-slate-100/50 relative overflow-hidden text-left">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/5 rounded-bl-full -z-1" />
-                    <h3 className="text-xl font-bold text-brand-blue mb-4">Why KATexpert?</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                      Our preparation cycles are structured to transition candidates from general
-                      understanding to competitive top-percentile ranks. Every student receives individual
-                      focus through personalized scorecard analysis.
-                    </p>
-                    <div className="space-y-4">
-                      <div className="p-4 bg-slate-50 rounded-xl border-l-4 border-brand-blue">
-                        <h4 className="text-sm font-bold text-brand-blue">Live & Hybrid Flex</h4>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Never miss a lecture. Revise physical classes through our integrated portals
-                          anytime.
-                        </p>
-                      </div>
-                      <div className="p-4 bg-slate-50 rounded-xl border-l-4 border-brand-orange">
-                        <h4 className="text-sm font-bold text-brand-blue">Rigorous Mock Drills</h4>
-                        <p className="text-xs text-gray-500 mt-1">
-                          Practice under real environment simulators with feedback mapping for weakness
-                          fixes.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Pillars Section */}
-                <div className="mb-20">
-                  <div className="text-center mb-12">
-                    <h2 className="text-2xl sm:text-3xl font-display font-bold text-brand-blue">
-                      Our Three Academic Pillars
-                    </h2>
-                    <p className="text-sm text-gray-500 mt-2">
-                      The framework that drives student success across Nagpur and beyond
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {pillars.map((pillar, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-white border border-slate-100 p-8 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-left"
-                      >
-                        <div className="w-14 h-14 bg-brand-orange/10 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
-                          {pillar.icon}
-                        </div>
-                        <h3 className="text-lg font-bold text-brand-blue mb-3">{pillar.title}</h3>
-                        <p className="text-sm text-gray-500 leading-relaxed">{pillar.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Coaching Verticals Portfolio Summary */}
-                <div className="bg-brand-blue text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden mb-20 text-left">
-                  <div className="absolute top-0 right-0 w-80 h-80 bg-brand-orange/10 rounded-full blur-3xl -z-1" />
-                  <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-white/5 rounded-full blur-2xl -z-1" />
-
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center">
-                    <div className="lg:col-span-1 space-y-4">
-                      <span className="text-xs font-bold text-brand-orange uppercase tracking-widest bg-white/10 px-3.5 py-1.5 rounded-full inline-block">
-                        Coaching Verticals
-                      </span>
-                      <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight">
-                        Our Entrance Portfolios
-                      </h2>
-                      <p className="text-sm text-slate-300 leading-relaxed">
-                        We design specialized batches to ensure students learn systematically, keeping focus
-                        on core competitive criteria.
-                      </p>
-                    </div>
-
-                    <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4">
-                      {COURSES.map((course) => (
-                        <div
-                          key={course.id}
-                          className="bg-white/10 backdrop-blur-md border border-white/10 p-5 rounded-2xl hover:bg-white/15 transition-colors"
-                        >
-                          <div className="text-brand-orange font-bold text-base mb-1">{course.title}</div>
-                          <div className="text-xs text-white/90 font-bold">{course.category} Category</div>
-                          <div className="text-[10px] text-slate-300 mt-2 font-medium">
-                            {course.duration} Batch
+                {/* About KATexpert Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-12 text-left" id="about-main-section">
+                  {/* Left Column: Image with premium styling */}
+                  <div className="lg:col-span-5 flex justify-center lg:justify-start">
+                    <div className="relative group max-w-xs md:max-w-sm w-full">
+                      {/* Background decorative elements */}
+                      <div className="absolute -inset-1 bg-gradient-to-tr from-brand-orange to-orange-500 rounded-3xl blur-md opacity-25 group-hover:opacity-35 transition duration-500" />
+                      <div className="relative bg-white border border-slate-100 p-2.5 rounded-3xl shadow-xl">
+                        <div className="relative aspect-square overflow-hidden rounded-2xl bg-slate-50 border border-slate-100">
+                          <img
+                            src={p6}
+                            alt="Graduate Student - KATexpert Nagpur"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
+                          />
+                          <div className="absolute top-3 left-3 bg-brand-blue/90 backdrop-blur-md text-white text-[9px] font-bold px-3 py-1 rounded-full shadow-md">
+                            Nagpur's Premium Institute
                           </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
+
+                  {/* Right Column: Content */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <h2 className="text-xl sm:text-2xl font-display font-bold text-brand-blue tracking-tight">
+                      Empowering Minds, Shaping Futures
+                    </h2>
+                    <p className="text-slate-600 leading-relaxed text-xs sm:text-sm">
+                      <strong className="text-brand-blue">KATexpert</strong> is a premier educational institute dedicated to empowering students with the knowledge and strategies needed to excel in competitive exams. With a strong focus on personalized learning and result-driven coaching, we specialize in preparing aspirants for:
+                    </p>
+
+                    {/* Dynamic Badges / Grid of courses */}
+                    <motion.div 
+                      variants={containerVariants}
+                      initial="hidden"
+                      whileInView="show"
+                      viewport={{ once: true, margin: "-50px" }}
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1"
+                    >
+                      {[
+                        { name: 'CAT', fullName: 'Common Admission Test', icon: <GraduationCap className="w-4 h-4 text-brand-orange" />, desc: 'Premium MBA Prep' },
+                        { name: 'CLAT', fullName: 'Common Law Admission Test', icon: <Scale className="w-4 h-4 text-brand-orange" />, desc: 'Law Careers Gateway' },
+                        { name: 'IPMAT', fullName: 'Integrated Program in Management', icon: <BookOpen className="w-4 h-4 text-brand-orange" />, desc: 'Direct IIM Admissions' },
+                        { name: 'MBA CET', fullName: 'Maharashtra MBA Entrance', icon: <Trophy className="w-4 h-4 text-brand-orange" />, desc: 'State MBA Admissions' },
+                        { name: 'MCA CET', fullName: 'Maharashtra MCA Entrance', icon: <TrendingUp className="w-4 h-4 text-brand-orange" />, desc: 'State MCA Admissions' },
+                        { name: 'CRT', fullName: 'Campus Recruitment Training', icon: <Briefcase className="w-4 h-4 text-brand-orange" />, desc: 'Placement Preparation' },
+                      ].map((course) => (
+                        <motion.div 
+                          key={course.name} 
+                          variants={itemVariants}
+                          className="flex items-start space-x-3 p-2.5 bg-white border border-slate-100 rounded-2xl hover:shadow-md transition-shadow duration-300 hover:scale-101 hover:border-brand-orange/20"
+                        >
+                          <div className="p-1.5 bg-brand-orange/5 rounded-xl shrink-0">
+                            {course.icon}
+                          </div>
+                          <div>
+                            <h4 className="text-[11px] font-bold text-brand-blue uppercase tracking-wider">{course.name}</h4>
+                            <p className="text-[9px] text-slate-400 font-semibold mt-0.5">{course.fullName}</p>
+                            <p className="text-[9px] text-slate-500 font-medium mt-1">{course.desc}</p>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Highlighted Quote Callout */}
+                <div className="relative overflow-hidden bg-brand-blue text-white rounded-2xl p-6 sm:p-8 shadow-lg text-left" id="about-callout">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/10 rounded-full blur-3xl" />
+                  <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
+                  <div className="relative z-10 max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-6 md:gap-10">
+                    <div className="p-3 bg-white/10 backdrop-blur border border-white/10 rounded-2xl shrink-0">
+                      <Quote className="w-6 h-6 text-brand-orange" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium leading-relaxed text-slate-200 italic">
+                      "At KATexpert, we combine experienced faculty, comprehensive study material, and regular mock tests to ensure our students are fully prepared to achieve their academic and career goals. Whether you’re aiming for top business schools or technical institutions, our expert guidance paves the way to success."
+                    </p>
+                  </div>
+                </div>
+
+                {/* Mission, Vision & Values Grid */}
+                <div className="space-y-8" id="about-identity-values">
+                  <div className="text-center max-w-2xl mx-auto">
+                    <span className="text-[11px] font-bold text-brand-orange uppercase tracking-widest bg-brand-orange/10 px-3.5 py-1.5 rounded-full inline-block mb-3">
+                      Identity & Principles
+                    </span>
+                    <h2 className="text-xl sm:text-2xl font-display font-bold text-brand-blue tracking-tight">
+                      Our Mission, Vision & Values
+                    </h2>
+                    <p className="text-[10px] text-slate-400 font-bold mt-1.5 uppercase tracking-wider">
+                      The core driving force behind our mentoring approach
+                    </p>
+                  </div>
+
+                  <motion.div 
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, margin: "-100px" }}
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                  >
+                    {[
+                      {
+                        title: "MISSION",
+                        iconUrl: "https://katexperts.com/wp-content/uploads/2025/04/download.png",
+                        text: "We’re here to support every MBA dream with the right guidance, honest mentoring, and smart preparation. From your first step to the exam, we walk with you—helping you grow, stay confident, and reach the B-school you’ve set your heart on."
+                      },
+                      {
+                        title: "VISION",
+                        iconUrl: "https://katexperts.com/wp-content/uploads/2025/04/eye.png",
+                        text: "To become the most trusted and result-oriented MBA entrance coaching institute in India, empowering every aspirant to realize their dream of getting into top B-schools through excellence in teaching, mentoring, and innovation."
+                      },
+                      {
+                        title: "VALUES",
+                        iconUrl: "https://katexperts.com/wp-content/uploads/2025/04/social-responsibility.png",
+                        text: "We believe every student brings a dream that deserves real care and honest guidance. You’re not just here to crack an exam—you’re here to grow, to struggle, to believe in yourself a little more each day. And we’re here to walk that journey with you. We value truth over hype, effort over perfection, and people over numbers. Through every high and low, we’ll show up—for your goals, your growth, and your story. Because to us, you’re never just a student. You’re someone chasing something that matters—and we’re honored to be part of that."
+                      }
+                    ].map((item) => (
+                      <motion.div
+                        key={item.title}
+                        variants={itemVariants}
+                        className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col items-start text-left relative overflow-hidden"
+                      >
+                        {/* Soft background glow */}
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-brand-orange/5 rounded-bl-full -z-1" />
+                        
+                        <div className="w-11 h-11 bg-slate-50 border border-slate-100/80 rounded-2xl flex items-center justify-center mb-4 shadow-sm p-2.5 shrink-0">
+                          <img
+                            src={item.iconUrl}
+                            alt={item.title}
+                            className="w-full h-full object-contain filter hover:scale-105 transition-transform"
+                            onError={(e) => {
+                              // Fallback if image fails to load
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                        
+                        <h3 className="text-sm sm:text-base font-display font-bold text-brand-blue tracking-wide mb-2 flex items-center">
+                          {item.title}
+                        </h3>
+                        <p className="text-[11px] sm:text-xs text-slate-500 leading-relaxed font-medium">
+                          {item.text}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </motion.div>
                 </div>
               </div>
             )}
 
             {/* FACULTY TAB VIEW */}
             {activeTab === 'Faculty' && (
-              <div id="tab-pane-faculty" className="bg-white border border-slate-100 rounded-3xl p-8 sm:p-12 shadow-sm text-left">
+              <div id="tab-pane-faculty" className="max-w-5xl mx-auto bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm text-left">
                 {/* Header */}
-                <div className="mb-12">
-                  <h2 className="text-3xl font-display font-extrabold text-brand-blue tracking-tight relative inline-block pb-3">
+                <div className="mb-8">
+                  <h2 className="text-2xl font-display font-extrabold text-brand-blue tracking-tight relative inline-block pb-2.5">
                     Faculty
-                    <div className="absolute bottom-0 left-0 w-16 h-1 bg-[#ea580c] rounded-full" />
+                    <div className="absolute bottom-0 left-0 w-12 h-1 bg-[#ea580c] rounded-full" />
                   </h2>
                 </div>
 
                 {/* Faculty List */}
-                <div className="space-y-12">
+                <div className="space-y-10">
                   {FACULTY.map((member, idx) => {
                     // Helper function to render paragraphs and lists dynamically
                     const renderBioParagraphs = (paragraphs) => {
@@ -571,7 +649,7 @@ export default function AboutPage() {
                           if (inList) {
                             const listKey = `list-${pIdx}`;
                             elements.push(
-                              <ul key={listKey} className="list-disc pl-5 space-y-2 text-slate-700 text-sm md:text-base my-4">
+                              <ul key={listKey} className="list-disc pl-5 space-y-1.5 text-slate-700 text-xs md:text-sm my-3">
                                 {currentListItems.map((item, i) => (
                                   <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
                                 ))}
@@ -582,7 +660,7 @@ export default function AboutPage() {
                           elements.push(
                             <p
                               key={pIdx}
-                              className="text-slate-700 text-sm md:text-base leading-relaxed"
+                              className="text-slate-700 text-xs md:text-sm leading-relaxed"
                               dangerouslySetInnerHTML={{
                                 __html: p
                                   .replace(/Personal Interviews \(PI\)/g, "<strong>Personal Interviews (PI)</strong>")
@@ -597,7 +675,7 @@ export default function AboutPage() {
 
                       if (inList && currentListItems.length > 0) {
                         elements.push(
-                          <ul key="final-list" className="list-disc pl-5 space-y-2 text-slate-700 text-sm md:text-base my-4">
+                          <ul key="final-list" className="list-disc pl-5 space-y-1.5 text-slate-700 text-xs md:text-sm my-3">
                             {currentListItems.map((item, i) => (
                               <li key={i} dangerouslySetInnerHTML={{ __html: item }} />
                             ))}
@@ -610,10 +688,10 @@ export default function AboutPage() {
 
                     return (
                       <div key={member.name} id={member.slug} className="scroll-mt-32">
-                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                           {/* Left Column: Photo */}
                           <div className="col-span-12 md:col-span-3 flex justify-center md:justify-start">
-                            <div className="w-full max-w-[220px] aspect-[3/4] rounded-2xl overflow-hidden shadow-md border border-slate-100 bg-slate-50 flex items-center justify-center">
+                            <div className="w-full max-w-[180px] aspect-[3/4] rounded-2xl overflow-hidden shadow-md border border-slate-100 bg-slate-50 flex items-center justify-center">
                               {member.image ? (
                                 <img
                                   src={member.image}
@@ -622,24 +700,24 @@ export default function AboutPage() {
                                 />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-brand-blue text-white">
-                                  <span className="text-2xl font-bold font-display">{member.name[0]}</span>
+                                  <span className="text-xl font-bold font-display">{member.name[0]}</span>
                                 </div>
                               )}
                             </div>
                           </div>
 
                           {/* Right Column: Bio */}
-                          <div className="col-span-12 md:col-span-9 space-y-4">
+                          <div className="col-span-12 md:col-span-9 space-y-3">
                             <div>
-                              <h3 className="text-2xl font-display font-extrabold text-brand-blue tracking-tight">
+                              <h3 className="text-xl font-display font-extrabold text-brand-blue tracking-tight">
                                 {member.name}
                               </h3>
-                              <p className="mt-2 text-xs md:text-sm font-semibold text-[#ea580c] leading-relaxed uppercase tracking-wider">
+                              <p className="mt-1 text-[11px] md:text-xs font-semibold text-[#ea580c] leading-relaxed uppercase tracking-wider">
                                 {member.designation}
                               </p>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-3">
                               {renderBioParagraphs(member.longBio)}
                             </div>
                           </div>
@@ -647,7 +725,7 @@ export default function AboutPage() {
 
                         {/* Orange Divider between rows */}
                         {idx < FACULTY.length - 1 && (
-                          <div className="w-full border-t border-[#ea580c] my-12" />
+                          <div className="w-full border-t border-[#ea580c] my-8" />
                         )}
                       </div>
                     );
@@ -658,22 +736,22 @@ export default function AboutPage() {
 
             {/* GALLERY TAB VIEW */}
             {activeTab === 'Gallery' && (
-              <div id="tab-pane-gallery" className="space-y-10">
+              <div id="tab-pane-gallery" className="max-w-5xl mx-auto px-4 sm:px-8 py-6 space-y-8">
                 {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-8">
-                  <span className="text-xs font-bold text-brand-orange uppercase tracking-widest bg-brand-orange/10 px-3 py-1 rounded-full inline-block mb-3">
+                <div className="text-center max-w-3xl mx-auto mb-6">
+                  <span className="text-[11px] font-bold text-brand-orange uppercase tracking-widest bg-brand-orange/10 px-3.5 py-1.5 rounded-full inline-block mb-3">
                     Gallery
                   </span>
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-brand-blue tracking-tight mb-4">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-brand-blue tracking-tight mb-3">
                     Life at KATexpert in <span className="text-brand-orange">Frames</span>
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-500 leading-relaxed font-medium">
+                  <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-medium">
                     A glimpse into our classrooms, victory celebrations, mock bootcamp sessions, and interactive workshops.
                   </p>
                 </div>
 
                 {/* Sub-tabs Nav */}
-                <div className="flex justify-center border-b border-gray-200 max-w-md mx-auto mb-10">
+                <div className="flex justify-center border-b border-gray-200 max-w-md mx-auto mb-8">
                   <div className="flex space-x-8">
                     {[
                       { id: "photos", label: "Photos" },
@@ -685,7 +763,7 @@ export default function AboutPage() {
                         <button
                           key={tab.id}
                           onClick={() => setGallerySubTab(tab.id)}
-                          className={`pb-4 text-sm font-semibold tracking-wide border-b-2 transition-all cursor-pointer ${
+                          className={`pb-3.5 text-xs font-semibold tracking-wide border-b-2 transition-all cursor-pointer ${
                             isActive
                               ? "border-brand-orange text-brand-orange"
                               : "border-transparent text-gray-400 hover:text-gray-600"
@@ -700,10 +778,10 @@ export default function AboutPage() {
 
                 {/* Content Render */}
                 {gallerySubTab === "photos" && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
 
                     {/* Photo Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                       {filteredPhotos.map((item, idx) => (
                         <div
                           key={idx}
@@ -716,8 +794,8 @@ export default function AboutPage() {
                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                             loading="lazy"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                            <span className="text-[10px] font-bold text-white uppercase tracking-wider bg-brand-orange px-2 py-0.5 rounded">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                            <span className="text-[9px] font-bold text-white uppercase tracking-wider bg-brand-orange px-2 py-0.5 rounded">
                               {item.category}
                             </span>
                           </div>
@@ -738,61 +816,26 @@ export default function AboutPage() {
                 )}
 
                 {gallerySubTab === "videos" && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
 
 
                     {/* Videos Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       {filteredVideos.map((video, idx) => (
-                        <div key={idx} className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-md flex flex-col justify-between">
-                          <div className="relative aspect-video bg-black">
-                            <iframe
-                              src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                              title={video.title}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                              allowFullScreen
-                              className="absolute inset-0 w-full h-full"
-                            />
-                          </div>
-                          <div className="p-5 flex-1 flex flex-col justify-between text-left">
-                            <div className="space-y-2">
-                              <div className="flex justify-between items-center">
-                                <span className="text-[10px] font-bold text-brand-orange uppercase bg-brand-orange/5 px-2.5 py-1 rounded-full">
-                                  {video.exam}
-                                </span>
-                                {video.score && (
-                                  <span className="text-[10px] font-bold text-brand-blue uppercase bg-brand-blue/5 px-2.5 py-1 rounded-full">
-                                    {video.score}
-                                  </span>
-                                )}
-                              </div>
-                              <h3 className="font-display font-bold text-brand-blue text-sm leading-normal">
-                                {video.title}
-                              </h3>
-                              <p className="text-xs text-gray-500 italic">
-                                "{video.quote}"
-                              </p>
-                            </div>
-                            <div className="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between text-[11px] font-bold text-gray-400">
-                              <span>{video.name}</span>
-                              <span className="text-brand-blue">{video.college}</span>
-                            </div>
-                          </div>
-                        </div>
+                        <AboutVideoCard key={idx} video={video} />
                       ))}
                     </div>
                   </div>
                 )}
 
                 {gallerySubTab === "news" && (
-                  <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="flex flex-col gap-6">
+                  <div className="max-w-3xl mx-auto space-y-5">
+                    <div className="flex flex-col gap-4">
                       {NEWS_EVENTS.map((event) => (
-                        <div key={event.id} className="rounded-3xl border border-slate-100 bg-white p-6 shadow-md flex flex-col md:flex-row gap-6 text-left">
+                        <div key={event.id} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-md flex flex-col md:flex-row gap-5 text-left">
                           {/* Type Badge */}
-                          <div className="md:w-36 shrink-0 flex flex-col items-start gap-1">
-                            <span className={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+                          <div className="md:w-32 shrink-0 flex flex-col items-start gap-0.5">
+                            <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
                               event.type === "News"
                                 ? "bg-blue-50 text-blue-600 border border-blue-100"
                                 : event.type === "Workshop"
@@ -801,22 +844,22 @@ export default function AboutPage() {
                             }`}>
                               {event.type}
                             </span>
-                            <span className="mt-2 text-xs text-slate-500 font-semibold">{event.date}</span>
-                            <span className="text-[11px] text-slate-400">{event.time}</span>
+                            <span className="mt-1.5 text-[11px] text-slate-500 font-semibold">{event.date}</span>
+                            <span className="text-[10px] text-slate-400">{event.time}</span>
                           </div>
                           {/* Event Content */}
                           <div className="flex-1 flex flex-col justify-center">
-                            <h3 className="font-display text-sm sm:text-base font-bold text-brand-blue leading-normal">{event.title}</h3>
-                            <p className="mt-2 text-xs text-slate-500 leading-relaxed">{event.desc}</p>
+                            <h3 className="font-display text-xs sm:text-sm font-bold text-brand-blue leading-normal">{event.title}</h3>
+                            <p className="mt-1.5 text-[11px] text-slate-500 leading-relaxed">{event.desc}</p>
                             {event.images && event.images.length > 0 && (
-                              <div className="mt-4 flex flex-wrap gap-3">
+                              <div className="mt-3 flex flex-wrap gap-2.5">
                                 {event.images.map((img, index) => (
                                   <a 
                                     key={index}
                                     href={img}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="relative block h-20 w-28 overflow-hidden rounded-xl border border-slate-200 shadow-sm hover:scale-105 transition-transform"
+                                    className="relative block h-16 w-24 overflow-hidden rounded-lg border border-slate-200 shadow-sm hover:scale-105 transition-transform"
                                   >
                                     <img 
                                       src={img} 
@@ -827,8 +870,8 @@ export default function AboutPage() {
                                 ))}
                               </div>
                             )}
-                            <div className="mt-3 flex items-center gap-1.5 text-xs text-brand-orange font-semibold">
-                              <MapPin className="h-3.5 w-3.5" />
+                            <div className="mt-2.5 flex items-center gap-1 text-[11px] text-brand-orange font-semibold">
+                              <MapPin className="h-3 w-3" />
                               {event.venue}
                             </div>
                           </div>
@@ -841,137 +884,75 @@ export default function AboutPage() {
             )}
 
             {/* REVIEWS TAB VIEW */}
-            {activeTab === 'Reviews' && (
-              <div id="tab-pane-reviews">
-                {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                  <span className="text-xs font-bold text-brand-orange uppercase tracking-widest bg-brand-orange/10 px-3 py-1 rounded-full inline-block mb-3">
-                    Testimonials
-                  </span>
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-brand-blue tracking-tight mb-4">
-                    Candidate <span className="text-brand-orange">reviews</span> & feedback
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-500 leading-relaxed font-medium">
-                    Hear directly from our successful alumni about how the personal mentorship, hybrid
-                    portal support, and rigorous mock test series shaped their careers.
-                  </p>
-                </div>
-
-                {/* Reviews grid */}
-                <motion.div
-                  variants={containerVariants}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, margin: '-100px' }}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
-                >
-                  {TESTIMONIALS.map((review, idx) => (
-                    <motion.div
-                      variants={itemVariants}
-                      key={idx}
-                      className="bg-white border border-slate-100 rounded-3xl p-8 shadow-md hover:shadow-xl transition-all duration-300 relative flex flex-col justify-between text-left"
-                    >
-                      <div className="absolute top-6 right-8 text-slate-100/80 shrink-0">
-                        <Quote className="w-10 h-10 transform rotate-180 text-brand-orange/5" />
-                      </div>
-
-                      <div className="space-y-6">
-                        <div className="flex items-center space-x-1">
-                          {[...Array(review.rating)].map((_, i) => (
-                            <Star key={i} className="w-4 h-4 text-brand-orange fill-brand-orange shrink-0" />
-                          ))}
-                        </div>
-                        <p className="text-sm text-gray-600 leading-relaxed italic font-medium relative z-10">
-                          "{review.text}"
-                        </p>
-                      </div>
-
-                      <div className="mt-8 pt-5 border-t border-slate-50 flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-brand-blue/10 flex items-center justify-center text-brand-blue shrink-0">
-                          <MessageSquare className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-bold text-brand-blue leading-normal">{review.name}</h4>
-                          <p className="text-[10px] text-gray-400 font-bold">{review.course || "CAT Alumnus"}</p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-
-                <div className="text-center text-xs text-gray-400 font-bold uppercase tracking-wider">
-                  ✔ Verified KATexpert Student Testimonials
-                </div>
-              </div>
-            )}
+          
 
             {/* CONTACT COORD TAB VIEW */}
             {activeTab === 'Contact' && (
-              <div id="tab-pane-contact">
+              <div id="tab-pane-contact" className="max-w-5xl mx-auto px-4 sm:px-8 py-6 space-y-8">
                 {/* Header */}
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                  <span className="text-xs font-bold text-brand-orange uppercase tracking-widest bg-brand-orange/10 px-3 py-1 rounded-full inline-block mb-3">
+                <div className="text-center max-w-3xl mx-auto mb-10">
+                  <span className="text-[11px] font-bold text-brand-orange uppercase tracking-widest bg-brand-orange/10 px-3.5 py-1.5 rounded-full inline-block mb-3">
                     Inquiries
                   </span>
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-brand-blue tracking-tight mb-4">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-brand-blue tracking-tight mb-3">
                     Connect with our <span className="text-brand-orange">advisors</span>
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-500 leading-relaxed font-medium">
+                  <p className="text-xs sm:text-sm text-gray-500 leading-relaxed font-medium">
                     Have questions about batches, duration, hybrid mode resources, or want to schedule a
                     counselling session? Reach out directly or visit our Dharampeth campus.
                   </p>
                 </div>
 
                 {/* Contact layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 text-left">
-                  <div className="lg:col-span-5 space-y-8">
-                    <div className="bg-white border border-slate-100 p-8 rounded-3xl shadow-sm space-y-6">
-                      <h3 className="text-xl font-bold text-brand-blue">Nagpur Center Details</h3>
-                      <p className="text-xs text-gray-400 font-semibold leading-relaxed">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
+                  <div className="lg:col-span-5 space-y-6">
+                    <div className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm space-y-4">
+                      <h3 className="text-lg font-bold text-brand-blue">Nagpur Center Details</h3>
+                      <p className="text-[11px] text-gray-400 font-semibold leading-relaxed">
                         Our advisors are active daily from 10:00 AM to 7:00 PM (IST) to handle admission
                         inquiries and mock counselling.
                       </p>
 
-                      <div className="space-y-6 pt-2">
-                        <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
-                            <MapPin className="w-5 h-5 text-brand-orange" />
+                      <div className="space-y-4 pt-1">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
+                            <MapPin className="w-4 h-4 text-brand-orange" />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-brand-blue">Campus Address</h4>
-                            <p className="text-xs text-gray-500 mt-1 leading-relaxed font-medium">
+                            <h4 className="text-xs font-bold text-brand-blue">Campus Address</h4>
+                            <p className="text-[11px] text-gray-500 mt-0.5 leading-relaxed font-medium">
                               {CONTACT_INFO.address}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
-                            <Phone className="w-5 h-5 text-brand-orange" />
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
+                            <Phone className="w-4 h-4 text-brand-orange" />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-brand-blue">Phone Numbers</h4>
-                            <p className="text-xs text-gray-500 mt-1 font-semibold">{CONTACT_INFO.phone}</p>
+                            <h4 className="text-xs font-bold text-brand-blue">Phone Numbers</h4>
+                            <p className="text-[11px] text-gray-500 mt-0.5 font-semibold">{CONTACT_INFO.phone}</p>
                           </div>
                         </div>
 
-                        <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
-                            <Mail className="w-5 h-5 text-brand-orange" />
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
+                            <Mail className="w-4 h-4 text-brand-orange" />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-brand-blue">Email Channel</h4>
-                            <p className="text-xs text-gray-500 mt-1 font-semibold">{CONTACT_INFO.email}</p>
+                            <h4 className="text-xs font-bold text-brand-blue">Email Channel</h4>
+                            <p className="text-[11px] text-gray-500 mt-0.5 font-semibold">{CONTACT_INFO.email}</p>
                           </div>
                         </div>
 
-                        <div className="flex items-start space-x-4">
-                          <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
-                            <Clock className="w-5 h-5 text-brand-orange" />
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-brand-orange/10 flex items-center justify-center text-brand-orange shrink-0">
+                            <Clock className="w-4 h-4 text-brand-orange" />
                           </div>
                           <div>
-                            <h4 className="text-sm font-bold text-brand-blue">Enquiry Timings</h4>
-                            <p className="text-xs text-gray-500 mt-1 font-medium">
+                            <h4 className="text-xs font-bold text-brand-blue">Enquiry Timings</h4>
+                            <p className="text-[11px] text-gray-500 mt-0.5 font-medium">
                               Monday – Sunday (10:00 AM – 7:30 PM)
                             </p>
                           </div>
@@ -980,15 +961,15 @@ export default function AboutPage() {
                     </div>
 
                     {/* Dark map */}
-                    <div className="h-64 rounded-3xl overflow-hidden relative border border-slate-100 shadow-md">
-                      <div className="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center text-center p-6">
+                    <div className="h-56 rounded-3xl overflow-hidden relative border border-slate-100 shadow-md">
+                      <div className="absolute inset-0 bg-slate-900 flex flex-col items-center justify-center text-center p-5">
                         <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]" />
-                        <MapPin className="w-7 h-7 text-brand-orange mb-2 animate-bounce" />
-                        <h4 className="text-sm font-bold text-white">KATexpert Dharampeth Campus</h4>
-                        <p className="text-[10px] text-slate-400 mt-1 leading-normal max-w-xs font-medium">
+                        <MapPin className="w-6 h-6 text-brand-orange mb-1.5 animate-bounce" />
+                        <h4 className="text-xs font-bold text-white">KATexpert Dharampeth Campus</h4>
+                        <p className="text-[9px] text-slate-400 mt-0.5 leading-normal max-w-xs font-medium">
                           Located behind Batukbhai Jewellers in Khare Town, Nagpur.
                         </p>
-                        <div className="mt-4 px-3 py-1 bg-white/10 backdrop-blur text-[9px] text-slate-300 rounded font-semibold uppercase tracking-wider">
+                        <div className="mt-3.5 px-2.5 py-0.5 bg-white/10 backdrop-blur text-[8px] text-slate-300 rounded font-semibold uppercase tracking-wider">
                           Nagpur Hub - Maharashtra
                         </div>
                       </div>
@@ -997,8 +978,8 @@ export default function AboutPage() {
 
                   {/* Form */}
                   <div className="lg:col-span-7">
-                    <div className="bg-white border border-slate-100 p-8 sm:p-10 rounded-3xl shadow-sm relative overflow-hidden">
-                      <div className="absolute top-0 left-0 right-0 h-1.5 bg-[#ea580c]" />
+                    <div className="bg-white border border-slate-100 p-6 sm:p-8 rounded-2xl shadow-sm relative overflow-hidden">
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-[#ea580c]" />
 
                       <AnimatePresence mode="wait">
                         {!isSubmitted ? (
@@ -1008,57 +989,57 @@ export default function AboutPage() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onSubmit={handleContactSubmit}
-                            className="space-y-6"
+                            className="space-y-4"
                           >
-                            <div className="space-y-1.5">
-                              <h3 className="text-2xl font-bold text-brand-blue tracking-tight">Send An Inquiry Message</h3>
-                              <p className="text-xs text-gray-400 font-semibold">Fill out the details below. Our admissions desk will get in touch with you.</p>
+                            <div className="space-y-1">
+                              <h3 className="text-lg font-bold text-brand-blue tracking-tight">Send An Inquiry Message</h3>
+                              <p className="text-[11px] text-gray-400 font-semibold">Fill out the details below. Our admissions desk will get in touch with you.</p>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-xs font-bold text-brand-blue uppercase tracking-wider">Full Name *</label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="flex flex-col space-y-1">
+                                <label className="text-[10px] font-bold text-brand-blue uppercase tracking-wider">Full Name *</label>
                                 <input
                                   type="text"
                                   required
                                   placeholder="Enter your name"
                                   value={formData.name}
                                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-sm font-medium rounded-xl px-4 py-3 focus:outline-none bg-white text-[#1e293b]"
+                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-xs font-medium rounded-lg px-3.5 py-2.5 focus:outline-none bg-white text-[#1e293b]"
                                 />
                               </div>
 
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-xs font-bold text-brand-blue uppercase tracking-wider">Contact Number *</label>
+                              <div className="flex flex-col space-y-1">
+                                <label className="text-[10px] font-bold text-brand-blue uppercase tracking-wider">Contact Number *</label>
                                 <input
                                   type="tel"
                                   required
                                   placeholder="Enter mobile number"
                                   value={formData.phone}
                                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-sm font-medium rounded-xl px-4 py-3 focus:outline-none bg-white text-[#1e293b]"
+                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-xs font-medium rounded-lg px-3.5 py-2.5 focus:outline-none bg-white text-[#1e293b]"
                                 />
                               </div>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-xs font-bold text-brand-blue uppercase tracking-wider">Email Address</label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div className="flex flex-col space-y-1">
+                                <label className="text-[10px] font-bold text-brand-blue uppercase tracking-wider">Email Address</label>
                                 <input
                                   type="email"
                                   placeholder="Enter email address"
                                   value={formData.email}
                                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-sm font-medium rounded-xl px-4 py-3 focus:outline-none bg-white text-[#1e293b]"
+                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-xs font-medium rounded-lg px-3.5 py-2.5 focus:outline-none bg-white text-[#1e293b]"
                                 />
                               </div>
 
-                              <div className="flex flex-col space-y-1.5">
-                                <label className="text-xs font-bold text-brand-blue uppercase tracking-wider">Select Target Course</label>
+                              <div className="flex flex-col space-y-1">
+                                <label className="text-[10px] font-bold text-brand-blue uppercase tracking-wider">Select Target Course</label>
                                 <select
                                   value={formData.course}
                                   onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-sm font-bold text-brand-blue rounded-xl px-4 py-3 focus:outline-none bg-white"
+                                  className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-xs font-bold text-brand-blue rounded-lg px-3.5 py-2.5 focus:outline-none bg-white"
                                 >
                                   {['CAT', 'CLAT', 'IPMAT', 'MBA CET', 'MCA CET', 'CRT'].map((course) => (
                                     <option key={course} value={course}>{course} Entrance Batch</option>
@@ -1067,23 +1048,23 @@ export default function AboutPage() {
                               </div>
                             </div>
 
-                            <div className="flex flex-col space-y-1.5">
-                              <label className="text-xs font-bold text-brand-blue uppercase tracking-wider">Your Message / Query Notes</label>
+                            <div className="flex flex-col space-y-1">
+                              <label className="text-[10px] font-bold text-brand-blue uppercase tracking-wider">Your Message / Query Notes</label>
                               <textarea
-                                rows={4}
+                                rows={3}
                                 placeholder="Write down any questions about batch timings, fee structures, offline classes, demo schedule, etc."
                                 value={formData.message}
                                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-sm font-medium rounded-xl px-4 py-3 focus:outline-none resize-none bg-white text-[#1e293b]"
+                                className="w-full border border-slate-200 focus:border-[#ea580c] focus:ring-1 focus:ring-[#ea580c] text-xs font-medium rounded-lg px-3.5 py-2.5 focus:outline-none resize-none bg-white text-[#1e293b]"
                               />
                             </div>
 
                             <button
                               type="submit"
-                              className="w-full bg-[#ea580c] hover:bg-[#f97316] text-white font-bold py-3.5 px-6 rounded-xl text-sm transition-all shadow-md flex items-center justify-center space-x-2 cursor-pointer"
+                              className="w-full bg-[#ea580c] hover:bg-[#f97316] text-white font-bold py-2.5 px-5 rounded-lg text-xs transition-all shadow-md flex items-center justify-center space-x-2 cursor-pointer"
                             >
                               <span>Submit Query to Advisors</span>
-                              <Send className="w-4 h-4 text-white" />
+                              <Send className="w-3.5 h-3.5 text-white" />
                             </button>
                           </motion.form>
                         ) : (
@@ -1092,14 +1073,14 @@ export default function AboutPage() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0 }}
-                            className="py-12 text-center flex flex-col items-center justify-center space-y-4"
+                            className="py-10 text-center flex flex-col items-center justify-center space-y-3"
                           >
-                            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-green-500 border border-green-200 shadow-md animate-bounce">
-                              <CheckCircle2 className="w-10 h-10" />
+                            <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-green-500 border border-green-200 shadow-md animate-bounce">
+                              <CheckCircle2 className="w-7 h-7" />
                             </div>
-                            <div className="space-y-1.5">
-                              <h4 className="text-2xl font-bold text-brand-blue">Message Dispatched!</h4>
-                              <p className="text-sm text-gray-500 max-w-sm mx-auto font-semibold leading-relaxed">
+                            <div className="space-y-1">
+                              <h4 className="text-xl font-bold text-brand-blue">Message Dispatched!</h4>
+                              <p className="text-xs text-gray-500 max-w-sm mx-auto font-semibold leading-relaxed">
                                 Thank you. Your inquiry regarding <strong className="text-brand-orange">{formData.course}</strong> has been received successfully.
                               </p>
                             </div>
