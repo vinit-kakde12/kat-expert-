@@ -120,7 +120,7 @@ function Testimonials() {
               </div>
             </div>
             <Link
-              to="/video-testimonials"
+              to="/about?tab=Gallery&subtab=videos"
               className="rounded-full bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-sm hover:bg-accent/90 transition-colors"
             >
               Watch Now
