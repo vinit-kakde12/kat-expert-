@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "motion/react";
 import { Star, Quote, PlayCircle } from "lucide-react";
 import { TESTIMONIALS } from "@/lib/site-data";
