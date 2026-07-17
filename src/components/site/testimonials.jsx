@@ -118,12 +118,12 @@ function Testimonials() {
                 </p>
               </div>
             </div>
-            <a
-              href="#contact"
+            <Link
+              to="/video-testimonials"
               className="rounded-full bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground shadow-sm hover:bg-accent/90 transition-colors"
             >
               Watch Now
-            </a>
+            </Link>
           </div>
         </Reveal>
 
